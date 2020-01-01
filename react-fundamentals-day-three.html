@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <script
+      crossorigin
+      src="https://unpkg.com/react@16/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"
+    ></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <title>React Bootcamp By Tyler Mcginnis - DAY 1</title>
+  </head>
+  <body>
+    <div style="background-color: honeydew;">
+      <h1>React Fundamentals Boot - Day 3</h1>
+      <div id="AppDayThree"></div>
+    </div>
+
+    <div id="notes-day-three">
+      <section></section>
+    </div>
+
+    <script>
+      window.API = {
+        fetchFriends() {
+          return new Promise((res, rej) => {
+            const friends = ["Mario", "Fevos", "Zack"];
+
+            setTimeout(() => {
+              res(friends);
+            }, 2000);
+          });
+        }
+      };
+    </script>
+    <script type="text/babel">
+      class Loading extends React.Component {
+        constructor(props) {
+          super(props);
+
+          this.state = {
+            text: "Loading"
+          };
+        }
+
+        componentDidMount() {
+          console.log("this is running...");
+          const stopper = this.state.text + "...";
+
+          this.interval = window.setInterval(() => {
+            this.state.text === stopper
+              ? this.setState({ text: "Loading" })
+              : this.setState(currentState => {
+                  return {
+                    text: currentState.text + "."
+                  };
+                });
+          }, 300);
+        }
+
+        componentWillUnmount() {
+          console.log("--componentWillUnmount--");
+          clearInterval(this.interval);
+        }
+
+        render() {
+          return <p>{this.state.text}</p>;
+        }
+      }
+      // Active friends component
+      function FriendList(props) {
+        return (
+          <div>
+            <h2>Active Friends</h2>
+            <ul>
+              {props.list.map(name => (
+                <li key={name}>
+                  <span>{name}</span>
+                  <button onClick={() => props.onRemoveFriend(name)}>
+                    Remove
+                  </button>
+                  <button onClick={() => props.onDeactivate(name)}>
+                    Deactivate
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      }
+
+      // inactive list component
+      function InactiveFriendList(props) {
+        return (
+          <div>
+            <h2>Inactive Friends</h2>
+            <ul>
+              {props.inactiveList.map(name => (
+                <li key={name}>
+                  <span>{name}</span>
+                  <button onClick={() => props.onReactivate(name)}>
+                    Reactivate
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      }
+
+      class AppDayThree extends React.Component {
+        constructor(props) {
+          super(props);
+
+          this.state = {
+            friends: [],
+            inactiveFriends: [],
+            input: "",
+            loading: true
+          };
+
+          this.handleRemoveFriend = this.handleRemoveFriend.bind(this);
+          this.updateInput = this.updateInput.bind(this);
+          this.handleAddFriend = this.handleAddFriend.bind(this);
+          this.deleteAllFriends = this.deleteAllFriends.bind(this);
+          this.handleDeactivateFriend = this.handleDeactivateFriend.bind(this);
+          this.handleReactivateFriend = this.handleReactivateFriend.bind(this);
+          console.log("--constructor--");
+        }
+
+        componentDidMount() {
+          console.log("--componentDidMount--");
+
+          API.fetchFriends().then(friends => {
+            this.setState({
+              friends,
+              loading: false
+            });
+          });
+        }
+        componentDidUpdate() {
+          console.log("--componentDidUpdate--");
+        }
+
+        handleAddFriend() {
+          this.setState(currentState => {
+            if (currentState.input === "") return;
+            return {
+              friends: currentState.friends.concat([currentState.input]),
+              input: ""
+            };
+          });
+        }
+
+        handleReactivateFriend(name) {
+          return this.setState(currentState => {
+            return {
+              friends: currentState.friends.concat(
+                currentState.inactiveFriends.filter(friend => friend === name)
+              ),
+              inactiveFriends: currentState.inactiveFriends.filter(
+                friend => friend !== name
+              )
+            };
+          });
+        }
+
+        updateInput(e) {
+          const value = e.target.value;
+
+          this.setState({
+            input: value
+          });
+        }
+
+        //clear all button
+        deleteAllFriends() {
+          this.setState(currentState => {
+            return {
+              friends: (currentState.friends = [])
+            };
+          });
+        }
+        //remove button
+        handleRemoveFriend(name) {
+          this.setState(currentState => {
+            return {
+              friends: currentState.friends.filter(friend => friend !== name)
+            };
+          });
+        }
+        //deactivate button
+        handleDeactivateFriend(name) {
+          this.setState(currentState => {
+            return {
+              friends: currentState.friends.filter(
+                inactive => inactive !== name
+              ),
+              inactiveFriends: currentState.inactiveFriends.concat(
+                currentState.friends.filter(inactive => inactive === name)
+              )
+            };
+          });
+        }
+
+        render() {
+          console.log("--render--");
+
+          if (this.state.loading === true) {
+            return <Loading />;
+          }
+          return (
+            <div>
+              <input
+                type="text"
+                placeholder="new friend"
+                value={this.state.input}
+                onChange={this.updateInput}
+              />
+              <button onClick={this.handleAddFriend}>Submit</button>
+              <div>
+                <br />
+                <button onClick={this.deleteAllFriends}>
+                  Delete All Friends
+                </button>
+              </div>
+
+              <FriendList
+                list={this.state.friends}
+                onRemoveFriend={this.handleRemoveFriend}
+                onDeactivate={this.handleDeactivateFriend}
+              />
+
+              <InactiveFriendList
+                inactiveList={this.state.inactiveFriends}
+                onReactivate={this.handleReactivateFriend}
+              />
+            </div>
+          );
+        }
+      }
+
+      ReactDOM.render(<AppDayThree />, document.getElementById("AppDayThree"));
+    </script>
+  </body>
+</html>

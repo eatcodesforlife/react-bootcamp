@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <script
+      crossorigin
+      src="https://unpkg.com/react@16/umd/react.development.js"
+    ></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <title>React Bootcamp By Tyler Mcginnis - DAY 1</title>
+  </head>
+  <body>
+    
+    <div class="renderer" style="height: 250px; border: solid 3px gray; background: #ccc"><h2>React will render here:</h2>
+      <div id="app"></div>
+    </div>
+    <div id="react-bootcamp-d1">
+      <h1>React Bootcamp - D1</h1>
+      <p class="notes">
+        <code>React.createElement()</code> - Creates an object representation of a
+        DOM node. Has three arguments - 1st: TAG - HTML tag that you want to create,
+        2nd: Any attributes that you want to add on the DOM object representation that's being created - ie. id, class and the likes, 3rd: Children of the
+        element.
+      <br><br>
+      Example: <br><br>
+      Regular HTML: <br>
+      <pre>
+        <code>
+          < h1 id="cris"> Cris < / h1 >
+        </code>
+      </pre>
+      <br>
+      React Version of above HTML code:
+      <pre>
+        <code>
+          const headerElement = React.createElement{ 
+          'h1', 
+          {id: 'cris'}, 
+          'Cris'  
+          }
+        </code>
+      </pre>
+      <section>
+        <code>props</code> - is the standard argument name in React used to passed in date to a component.
+      </section>
+     </p>
+     <p>
+       React Components - is a function or a class that optionally accepts an input and returns a React element.
+     </p>
+    </div>
+
+
+    <script type='text/babel'>
+
+      const name = 'Cris';
+      const handle = '@crisacosta';
+
+      function NameComponent(props){
+        return <h2>{props.name}</h2>
+      }
+
+      function HandleComponent(props){
+        
+        return <h3>{props.handle}</h3> 
+        
+      }
+
+      function App(){
+        return (
+          <div>
+            <NameComponent name={name} />
+            <HandleComponent handle={handle} />
+          </div>
+        )  
+      }
+      
+
+      ReactDOM.render(
+        <App />,
+        document.getElementById('app')
+      )
+
+
+
+      // const name = 'Cris';
+      // const handler = '@crisacosta';
+
+      // const nameElement = React.createElement(
+      //   'h3',
+      //   null,
+      //   name
+      // )
+
+      // const handlerElement = React.createElement(
+      //   'h4',
+      //   null,
+      //   handler
+      // )
+
+
+    </script>
+  </body>
+</html>

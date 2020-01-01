@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <script
+      crossorigin
+      src="https://unpkg.com/react@16/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"
+    ></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <title>React Bootcamp By Tyler Mcginnis - DAY 1</title>
+  </head>
+  <body>
+    <div style="background-color: honeydew;">
+      <h3>React render here</h3>
+      <div id="AppDayTwo"></div>
+    </div>
+
+    <div id="notes">
+      <section>
+        <code>this.setState()</code> - receives a callback that the first
+        argument is the current state and returns and object that will be merge
+        with the new state.
+      </section>
+    </div>
+    <script type="text/babel">
+      function FriendList(props) {
+        return (
+          <div>
+            <h2>Active Friends</h2>
+            <ul>
+              {props.list.map(name => (
+                <li key={name}>
+                  <span>{name}</span>
+                  <button onClick={() => props.onRemoveFriend(name)}>
+                    Remove
+                  </button>
+                  <button onClick={() => props.onDeactivate(name)}>
+                    Deactivate
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      }
+
+      // inactive list component
+      function InactiveFriendList(props) {
+        return (
+          <div>
+            <h2>Inactive Friends</h2>
+            <ul>
+              {props.inactiveList.map(name => (
+                <li key={name}>
+                  <span>{name}</span>
+                  <button onClick={() => props.onReactivate(name)}>
+                    Reactivate
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      }
+
+      class AppDayTwo extends React.Component {
+        constructor(props) {
+          super(props);
+
+          this.state = {
+            friends: ["Mario", "Fevos", "Zack"],
+            inactiveFriends: [],
+            input: ""
+          };
+
+          this.handleRemoveFriend = this.handleRemoveFriend.bind(this);
+          this.updateInput = this.updateInput.bind(this);
+          this.handleAddFriend = this.handleAddFriend.bind(this);
+          this.deleteAllFriends = this.deleteAllFriends.bind(this);
+          this.handleDeactivateFriend = this.handleDeactivateFriend.bind(this);
+          this.handleReactivateFriend = this.handleReactivateFriend.bind(this);
+        }
+
+        handleAddFriend() {
+          this.setState(currentState => {
+            if (currentState.input === "") return;
+            return {
+              friends: currentState.friends.concat([currentState.input]),
+              input: ""
+            };
+          });
+        }
+
+        handleReactivateFriend(name) {
+          return this.setState(currentState => {
+            return {
+              friends: currentState.friends.concat(
+                currentState.inactiveFriends.filter(friend => friend === name)
+              ),
+              inactiveFriends: currentState.inactiveFriends.filter(
+                friend => friend !== name
+              )
+            };
+          });
+        }
+
+        updateInput(e) {
+          const value = e.target.value;
+
+          this.setState({
+            input: value
+          });
+        }
+
+        //clear all button
+        deleteAllFriends() {
+          this.setState(currentState => {
+            return {
+              friends: (currentState.friends = [])
+            };
+          });
+        }
+        //remove button
+        handleRemoveFriend(name) {
+          this.setState(currentState => {
+            return {
+              friends: currentState.friends.filter(friend => friend !== name)
+            };
+          });
+        }
+        //deactivate button
+        handleDeactivateFriend(name) {
+          this.setState(currentState => {
+            return {
+              friends: currentState.friends.filter(
+                inactive => inactive !== name
+              ),
+              inactiveFriends: currentState.inactiveFriends.concat(
+                currentState.friends.filter(inactive => inactive === name)
+              )
+            };
+          });
+        }
+
+        render() {
+          return (
+            <div>
+              <input
+                type="text"
+                placeholder="new friend"
+                value={this.state.input}
+                onChange={this.updateInput}
+              />
+              <button onClick={this.handleAddFriend}>Submit</button>
+              <div>
+                <br />
+                <button onClick={this.deleteAllFriends}>
+                  Delete All Friends
+                </button>
+              </div>
+
+              <FriendList
+                list={this.state.friends}
+                onRemoveFriend={this.handleRemoveFriend}
+                onDeactivate={this.handleDeactivateFriend}
+              />
+
+              <InactiveFriendList
+                inactiveList={this.state.inactiveFriends}
+                onReactivate={this.handleReactivateFriend}
+              />
+            </div>
+          );
+        }
+      }
+
+      ReactDOM.render(<AppDayTwo />, document.getElementById("AppDayTwo"));
+    </script>
+  </body>
+</html>
